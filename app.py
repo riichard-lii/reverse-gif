@@ -1,5 +1,6 @@
 from flask import Flask, request
 from reverse import reverse_gif
+from django.core.exceptions import ValidationError
 
 app = Flask(__name__, static_url_path='/static')
 # max size 10MB
@@ -10,13 +11,10 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 def home():
     errors = ''
     if request.method == "POST":
-        gif_url = None
+        gif_url = request.form['url']
         try:
-            gif_url = request.form['url']
-        except:
-            errors += 'Something went wrong.\n'
-        reverse_gif(gif_url)
-        return '''
+            reverse_gif(gif_url)
+            return '''
                 <html>
                 <head>
                     <title>Result</title>
@@ -28,6 +26,8 @@ def home():
                     </body>
                 </html>
             '''
+        except ValidationError:
+            errors += '{} is not a valid URL or not a GIF.\n'.format(gif_url)
 
     return '''
         <html>
@@ -36,12 +36,12 @@ def home():
                 <link rel='icon' href='static/favicon.ico' type='image/x-icon'/>
             </head>
             <body>
-                {errors}
                 <h1>Reverse your Gifs!</h1>
                 <p>Enter the URL to GIF:</p>
                 <form method="post" action=".">
                     <p><input name="url" /></p>
                     <p><input type="submit" value="Reverse!" /></p>
+                    {errors}
                     <br>
                     <p>Made by Richard Li @ Northeastern University</p>
                 </form>

@@ -1,10 +1,16 @@
 from PIL import Image, ImageSequence
 import requests
 import os
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
 def reverse_gif(url_to_gif):
+    val = URLValidator()
+    val(url_to_gif)
+    if not url_to_gif.endswith('.gif'):
+        raise ValidationError
     response = requests.head(url_to_gif, stream=True)
-    
+
     if int(response.headers['Content-Length']) > 10000000:
         print('too big')
         return ''
