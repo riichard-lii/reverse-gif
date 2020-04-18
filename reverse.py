@@ -4,6 +4,7 @@ import os
 
 def reverse_gif(url_to_gif):
     response = requests.head(url_to_gif, stream=True)
+    
     if int(response.headers['Content-Length']) > 10000000:
         print('too big')
         return ''
