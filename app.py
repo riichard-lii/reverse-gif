@@ -4,6 +4,7 @@ from reverse import reverse_gif
 app = Flask(__name__, static_url_path='/static')
 # max size 10MB
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
