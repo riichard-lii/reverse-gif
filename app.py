@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from reverse import reverse_gif
 from django.core.exceptions import ValidationError
 
@@ -14,40 +14,12 @@ def home():
         gif_url = request.form['url']
         try:
             reverse_gif(gif_url)
-            return '''
-                <html>
-                <head>
-                    <title>Result</title>
-                    <link rel='icon' href='static/favicon.ico' type='image/x-icon'/>
-                </head>
-                    <body>
-                        <p><img src="static/reversed.gif" alt="reversed-gif"></p>
-                        <p><a href="/">Click here to reverse another gif.</a>
-                    </body>
-                </html>
-            '''
+            return render_template('result.html')
         except ValidationError:
-            errors += '{} is not a valid URL or not a GIF.\n'.format(gif_url)
-
-    return '''
-        <html>
-            <head>
-                <title>GIF reverser</title>
-                <link rel='icon' href='static/favicon.ico' type='image/x-icon'/>
-            </head>
-            <body>
-                <h1>Reverse your Gifs!</h1>
-                <p>Enter the URL to GIF:</p>
-                <form method="post" action=".">
-                    <p><input name="url" /></p>
-                    <p><input type="submit" value="Reverse!" /></p>
-                    {errors}
-                    <br>
-                    <p>Made by Richard Li @ Northeastern University</p>
-                </form>
-            </body>
-        </html>
-    '''.format(errors=errors)
+            return render_template('error.html', msg= gif_url + ' is not a valid URL/GIF!')
+        except ValueError:
+            return render_template('error.html', msg='The file is too big!')
+    return render_template('home.html')
 
 if __name__ == "__main__":
     app.run()
