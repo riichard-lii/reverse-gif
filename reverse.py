@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 def reverse_gif(url_to_gif):
     val = URLValidator()
     val(url_to_gif)
-    if not url_to_gif.endswith('.gif'):
+    if requests.head(url_to_gif).headers['Content-Type'] != 'image/gif':
         raise ValidationError
     response = requests.head(url_to_gif, stream=True)
 
